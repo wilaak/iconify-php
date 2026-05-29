@@ -1,5 +1,6 @@
-# iconify-php
+# Iconify Icons
 
+> [!NOTE]   
 > This is a work in progress.
 
 Some helpers to render [Iconify](https://iconify.design/) icons in PHP templates. Pairs well with the VSCode extension [Iconify IntelliSense](https://marketplace.visualstudio.com/items?itemName=antfu.iconify).
@@ -17,19 +18,25 @@ composer require wilaak/iconify-php
 ```php
 use Wilaak\Iconify as Icon;
 
+//
 // Remote icons fetched from the Iconify API are cached here:
+//
 Icon\init_remote(
     storePath: '/var/www/storage/icons',
     servePath: '/icons',
 );
 
+//
 // Local custom SVG files live here:
+//
 Icon\init_local(
     storePath: '/var/www/assets/icons',
     servePath: '/assets/icons',
 );
 
+//
 // Handle errors (missing files, failed API requests):
+//
 Icon\on_error(function (string $icon, string $reason): void {
     error_log("Icon error [$icon]: $reason");
 });
@@ -38,8 +45,8 @@ Icon\on_error(function (string $icon, string $reason): void {
 // by the browser, regardless of how many times it appears on the page.
 // Color is controlled via CSS currentColor (single-color only).
 //
-// This is the most efficient for simple monochrome icons.
-// For multicolor or animated icons, use inline() instead.
+// This is the most efficient one for simple monochrome icons. For
+// multicolor or animated icons, use inline() instead.
 //
 // Requires this CSS rule:
 //
