@@ -1,0 +1,194 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use function Wilaak\Iconify\_fetch_icon_to_disk;
+use function Wilaak\Iconify\Scanner\_scan_file_icons;
+
+$usage = <<<USAGE
+Usage: iconify-php <command> [options]
+
+Commands:
+  list        <cache-path>              List all downloaded icons
+  clear       <cache-path>              Delete all downloaded SVG files
+  fetch       <cache-path> <icon>       Pre-download a single icon (e.g. mdi:home)
+  scan        <cache-path> <src-path>   Scan source for icon calls and download missing icons
+
+USAGE;
+
+$argv = $_SERVER['argv'];
+$cmd  = $argv[1] ?? null;
+
+if ($cmd === null) {
+    echo $usage;
+    exit(0);
+}
+
+match ($cmd) {
+    'list'  => cmd_list($argv),
+    'clear' => cmd_clear($argv),
+    'fetch' => cmd_fetch($argv),
+    'scan'  => cmd_scan($argv),
+    default => (function () use ($cmd, $usage) {
+        fwrite(STDERR, "Unknown command: {$cmd}\n\n{$usage}");
+        exit(1);
+    })(),
+};
+
+function cmd_list(array $argv): void
+{
+    $path = $argv[2] ?? null;
+    if ($path === null) {
+        fwrite(STDERR, "Usage: iconify-php list <cache-path>\n");
+        exit(1);
+    }
+
+    $path = rtrim($path, '/');
+    if (!is_dir($path)) {
+        fwrite(STDERR, "Directory not found: {$path}\n");
+        exit(1);
+    }
+
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)
+    );
+
+    $icons = [];
+    foreach ($files as $file) {
+        if ($file->getExtension() !== 'svg') continue;
+        $rel     = ltrim(str_replace($path, '', $file->getPathname()), '/');
+        $icons[] = preg_replace('/\.svg$/', '', $rel);
+    }
+
+    if (empty($icons)) {
+        echo "No icons found in {$path}\n";
+        exit(0);
+    }
+
+    sort($icons);
+    echo implode("\n", $icons) . "\n";
+    echo "\n" . count($icons) . " icon(s)\n";
+}
+
+function cmd_clear(array $argv): void
+{
+    $path = $argv[2] ?? null;
+    if ($path === null) {
+        fwrite(STDERR, "Usage: iconify-php clear <cache-path>\n");
+        exit(1);
+    }
+
+    $path = rtrim($path, '/');
+    if (!is_dir($path)) {
+        fwrite(STDERR, "Directory not found: {$path}\n");
+        exit(1);
+    }
+
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)
+    );
+
+    $count = 0;
+    foreach ($files as $file) {
+        if ($file->getExtension() !== 'svg') continue;
+        unlink($file->getPathname());
+        $count++;
+    }
+
+    echo "Deleted {$count} icon(s) from {$path}\n";
+}
+
+function cmd_fetch(array $argv): void
+{
+    $path = $argv[2] ?? null;
+    $icon = $argv[3] ?? null;
+
+    if ($path === null || $icon === null) {
+        fwrite(STDERR, "Usage: iconify-php fetch <cache-path> <icon>\n");
+        exit(1);
+    }
+
+    if (strpos($icon, ':') === false) {
+        fwrite(STDERR, "Invalid icon name '{$icon}' — expected collection:name format\n");
+        exit(1);
+    }
+
+    $error = _fetch_icon_to_disk(rtrim($path, '/'), $icon);
+    if ($error !== null) {
+        fwrite(STDERR, "{$error}: {$icon}\n");
+        exit(1);
+    }
+
+    echo "Fetched: {$icon}\n";
+}
+
+function cmd_scan(array $argv): void
+{
+    $cachePath = $argv[2] ?? null;
+    $srcPath      = $argv[3] ?? null;
+
+    if ($cachePath === null || $srcPath === null) {
+        fwrite(STDERR, "Usage: iconify-php scan <cache-path> <src-path>\n");
+        exit(1);
+    }
+
+    $srcPath      = rtrim($srcPath, '/');
+    $cachePath = rtrim($cachePath, '/');
+
+    if (!is_dir($srcPath)) {
+        fwrite(STDERR, "Source directory not found: {$srcPath}\n");
+        exit(1);
+    }
+
+    $icons = scan_icons($srcPath);
+
+    if (empty($icons)) {
+        echo "No icon calls found in {$srcPath}\n";
+        exit(0);
+    }
+
+    echo "Found " . count($icons) . " unique icon(s)\n";
+
+    $fetched = 0;
+    $skipped = 0;
+    $failed  = 0;
+
+    foreach ($icons as $icon) {
+        $filePath = $cachePath . '/' . $icon . '.svg';
+        if (file_exists($filePath)) {
+            $skipped++;
+            continue;
+        }
+
+        $error = _fetch_icon_to_disk($cachePath, $icon);
+        if ($error !== null) {
+            fwrite(STDERR, "{$error}: {$icon}\n");
+            $failed++;
+        } else {
+            $fetched++;
+        }
+    }
+
+    echo "Downloaded: {$fetched}  Already present: {$skipped}  Failed: {$failed}\n";
+
+    if ($failed > 0) exit(1);
+}
+
+function scan_icons(string $srcPath): array
+{
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($srcPath, FilesystemIterator::SKIP_DOTS)
+    );
+
+    $icons = [];
+
+    foreach ($files as $file) {
+        if ($file->getExtension() !== 'php') continue;
+        foreach (_scan_file_icons(file_get_contents($file->getPathname())) as $icon) {
+            $icons[$icon] = true;
+        }
+    }
+
+    return array_keys($icons);
+}

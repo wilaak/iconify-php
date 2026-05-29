@@ -1,0 +1,25 @@
+{
+    "name": "wilaak/iconify-php",
+    "description": "Helpers for Iconify icons in PHP templates.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "ext-curl": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wilaak\\Iconify\\": "src/"
+        },
+        "files": [
+            "src/iconify.php",
+            "src/scanner.php"
+        ]
+    },
+    "bin": [
+        "bin/iconify-php"
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^13.1"
+    }
+}
