@@ -210,16 +210,12 @@ function _resolve_path(_IconCtx $ctx, string $icon): string
     return $ctx->remotePath . '/' . $icon . '.svg';
 }
 
-function _fetch_icon_to_disk(string $storePath, string $icon): ?string
-{
-    return _ensure_downloaded_fetch(_IconCtx::get(), $storePath, $icon);
-}
 
-function _ensure_downloaded_fetch(_IconCtx $ctx, string $remote_path, string $icon): ?string
+function _ensure_downloaded_fetch(_IconCtx $ctx, string $remotePath, string $icon): ?string
 {
-    [$collection, $icon_name] = \explode(':', $icon, 2);
+    [$collection, $iconName] = \explode(':', $icon, 2);
 
-    $url = $ctx->apiUrl . '/' . $collection . '.json?icons=' . $icon_name;
+    $url = $ctx->apiUrl . '/' . $collection . '.json?icons=' . $iconName;
 
     $ch = \curl_init($url);
     \curl_setopt_array($ch, [
@@ -234,26 +230,26 @@ function _ensure_downloaded_fetch(_IconCtx $ctx, string $remote_path, string $ic
         return 'API request failed: ' . $error;
     }
 
-    $data      = \json_decode($response, true);
-    $icon_data = $data['icons'][$icon_name] ?? null;
-    $body      = $icon_data['body'] ?? null;
+    $data     = \json_decode($response, true);
+    $iconData = $data['icons'][$iconName] ?? null;
+    $body     = $iconData['body'] ?? null;
     if ($body === null) {
         return 'Icon not found in API response';
     }
 
-    $width   = $icon_data['width']  ?? $data['width']  ?? 24;
-    $height  = $icon_data['height'] ?? $data['height'] ?? 24;
-    $viewbox = "0 0 $width $height";
+    $width    = $iconData['width']  ?? $data['width']  ?? 24;
+    $height   = $iconData['height'] ?? $data['height'] ?? 24;
+    $viewBox  = "0 0 $width $height";
 
-    $file_path  = $remote_path . '/' . $icon . '.svg';
-    $directory  = \dirname($file_path);
+    $filePath  = $remotePath . '/' . $icon . '.svg';
+    $directory = \dirname($filePath);
     if (!\is_dir($directory)) {
         \mkdir($directory, 0755, true);
     }
 
-    \file_put_contents($file_path, \sprintf(
+    \file_put_contents($filePath, \sprintf(
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="%s">%s</svg>',
-        $viewbox,
+        $viewBox,
         $body
     ));
 

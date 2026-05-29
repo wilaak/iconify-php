@@ -3,7 +3,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use function Wilaak\Iconify\_fetch_icon_to_disk;
+use Wilaak\Iconify\_IconCtx;
+use function Wilaak\Iconify\_ensure_downloaded_fetch;
 use function Wilaak\Iconify\Scanner\_scan_file_icons;
 
 $usage = <<<USAGE
@@ -114,7 +115,7 @@ function cmd_fetch(array $argv): void
         exit(1);
     }
 
-    $error = _fetch_icon_to_disk(rtrim($path, '/'), $icon);
+    $error = _ensure_downloaded_fetch(_IconCtx::get(),rtrim($path, '/'), $icon);
     if ($error !== null) {
         fwrite(STDERR, "{$error}: {$icon}\n");
         exit(1);
@@ -161,7 +162,7 @@ function cmd_scan(array $argv): void
             continue;
         }
 
-        $error = _fetch_icon_to_disk($cachePath, $icon);
+        $error = _ensure_downloaded_fetch(_IconCtx::get(),$cachePath, $icon);
         if ($error !== null) {
             fwrite(STDERR, "{$error}: {$icon}\n");
             $failed++;
