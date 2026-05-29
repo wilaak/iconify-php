@@ -77,7 +77,7 @@ Icon\inline('mdi:home');
 
 Icon\inline('mdi:home', '20px', '20px');
 ```
-## Cli Tool
+## Commands
 
 After `composer install`, a CLI tool is available at `vendor/bin/iconify-php`.
 
@@ -108,4 +108,3 @@ vendor/bin/iconify-php clear /var/www/storage/icons
 ## Todo
 
  - Cross-Site Scripting (XSS) detection for Inline SVG elements.
- - Improve scanner

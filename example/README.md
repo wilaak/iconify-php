@@ -1,6 +1,6 @@
 # Example
 
-Make sure you run the router to ensure `mask` icons get proper cache headers, otherwise they get mad at you!
+Make sure your mask SVGs are getting served with proper cache headers. If not, they will get angry!
 
 ```bash
 ./serve.sh

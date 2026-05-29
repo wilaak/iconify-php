@@ -15,26 +15,35 @@ Icon\init_remote(
 
 <head>
     <meta charset="UTF-8">
-    <title>iconify-php example</title>
+    <title>iconify-php</title>
     <style>
         body {
             font-family: sans-serif;
-            padding: 1rem;
-            background: #fff;
-            color: #000;
-        }
-
-        .row {
+            padding: 3rem;
+            background: white;
+            color: black;
             display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            flex-direction: column;
+            gap: 3rem;
         }
 
-        .label {
-            width: 200px;
-            font-size: 1rem;
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .item span {
+            font-size: 0.7rem;
             font-family: monospace;
+            color: black;
         }
 
         .iconify-mask {
@@ -47,37 +56,68 @@ Icon\init_remote(
 </head>
 
 <body>
-    <h1>iconify-php example</h1>
 
-    <div class="row">
-        <span class="label">mask mdi:home</span>
-        <?php Icon\mask('mdi:home', '32px', '32px') ?>
+    <div class="grid">
+        <div class="item">
+            <?php Icon\mask('ri:php-line', '32px', '32px') ?>
+            <span>ri:php-line</span>
+        </div>
+        <div class="item">
+            <?php Icon\mask('simple-icons:php', '32px', '32px') ?>
+            <span>simple-icons:php</span>
+        </div>
+        <div class="item">
+            <?php Icon\inline('devicon:php', '32px', '32px') ?>
+            <span>devicon:php</span>
+        </div>
     </div>
 
-    <div class="row">
-        <span class="label">mask mdi:account</span>
-        <?php Icon\mask('mdi:account', '32px', '32px') ?>
+    <div class="grid" style="align-items: flex-end;">
+        <div class="item">
+            <?php Icon\mask('ri:php-line', '16px', '16px') ?>
+            <span>16px</span>
+        </div>
+        <div class="item">
+            <?php Icon\mask('ri:php-line', '24px', '24px') ?>
+            <span>24px</span>
+        </div>
+        <div class="item">
+            <?php Icon\mask('ri:php-line', '32px', '32px') ?>
+            <span>32px</span>
+        </div>
+        <div class="item">
+            <?php Icon\mask('ri:php-line', '48px', '48px') ?>
+            <span>48px</span>
+        </div>
+        <div class="item">
+            <?php Icon\mask('ri:php-line', '64px', '64px') ?>
+            <span>64px</span>
+        </div>
     </div>
 
-    <div class="row">
-        <span class="label">inline mdi:home</span>
-        <?php Icon\inline('mdi:home', '32px', '32px') ?>
+    <div class="grid" style="align-items: flex-end;">
+        <div class="item">
+            <?php Icon\inline('devicon:php', '16px', '16px') ?>
+            <span>16px</span>
+        </div>
+        <div class="item">
+            <?php Icon\inline('devicon:php', '24px', '24px') ?>
+            <span>24px</span>
+        </div>
+        <div class="item">
+            <?php Icon\inline('devicon:php', '32px', '32px') ?>
+            <span>32px</span>
+        </div>
+        <div class="item">
+            <?php Icon\inline('devicon:php', '48px', '48px') ?>
+            <span>48px</span>
+        </div>
+        <div class="item">
+            <?php Icon\inline('devicon:php', '64px', '64px') ?>
+            <span>64px</span>
+        </div>
     </div>
 
-    <div class="row">
-        <span class="label">inline mdi:account</span>
-        <?php Icon\inline('mdi:account', '32px', '32px') ?>
-    </div>
-
-    <div class="row">
-        <span class="label">inline lucide:rocket</span>
-        <?php Icon\inline('lucide:rocket', '32px', '32px') ?>
-    </div>
-
-    <div class="row">
-        <span class="label">inline heroicons:bell</span>
-        <?php Icon\inline('heroicons:bell', '32px', '32px') ?>
-    </div>
 </body>
 
 </html>
