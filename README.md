@@ -1,11 +1,11 @@
-# Iconify Icons
+# Iconify API
 
 > [!NOTE]   
 > This is a work in progress.
 
-Some helpers to render [Iconify](https://iconify.design/) icons in PHP templates. Pairs well with the VSCode extension [Iconify IntelliSense](https://marketplace.visualstudio.com/items?itemName=antfu.iconify).
+Drop Iconify icons into any PHP template.
 
-See the [example](example/) for a working local dev setup.
+Pairs well with the VSCode extension [Iconify IntelliSense](https://marketplace.visualstudio.com/items?itemName=antfu.iconify). See the [example](example/) for a working local dev setup.
 
 ## Install
 
